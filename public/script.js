@@ -10,6 +10,18 @@ const fields = {
   footerIcon: document.getElementById('footerIcon')
 };
 
+// NUEVO: Función para parsear Markdown básico
+function formatMarkdown(text) {
+  return text
+    .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>') // bloque de código
+    .replace(/`([^`]+)`/g, '<code>$1</code>')                 // monoespaciado
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')         // negrita
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')                     // cursiva
+    .replace(/~~(.*?)~~/g, '<s>$1</s>')                       // tachado
+    .replace(/__(.*?)__/g, '<u>$1</u>')                       // subrayado
+    .replace(/\n/g, '<br>');                                  // saltos de línea
+}
+
 function updatePreview() {
   const preview = document.getElementById('embedPreview');
   preview.innerHTML = '';
@@ -23,9 +35,7 @@ function updatePreview() {
 
   const title = fields.title.value ? `<h3>${fields.title.value}</h3>` : '';
 
-  const description = fields.description.value
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
+  const description = formatMarkdown(fields.description.value); // aquí usamos el markdown
 
   const image = fields.imageUrl.value
     ? `<img src="${fields.imageUrl.value}" style="width:100%;border-radius:5px;margin-top:10px;">` : '';
@@ -44,6 +54,7 @@ function updatePreview() {
 }
 
 Object.values(fields).forEach(field => field.addEventListener('input', updatePreview));
+
 document.getElementById('generate').addEventListener('click', async () => {
   const embed = {
     title: fields.title.value,
