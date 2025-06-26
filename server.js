@@ -7,6 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
+// Ruta raíz para servir el index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.post('/api/create', (req, res) => {
   const embed = req.body;
   const code = uuidv4().replace(/-/g, '').substring(0, 32);
@@ -30,4 +35,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🟢 Editor de embeds corriendo en http://localhost:${PORT}`);
 });
-
