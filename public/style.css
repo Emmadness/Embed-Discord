@@ -1,0 +1,257 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #2c2f33;
+  color: white;
+}
+
+main {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.form-section,
+.preview-section {
+  flex: 1;
+  background: #23272a;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #555;
+  border-radius: 5px;
+  color: white;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: #00aaff;
+}
+
+.input-group label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  background: #23272a;
+  color: #aaa;
+  transition: 0.2s;
+  pointer-events: none;
+  padding: 0 5px;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group textarea:focus + label,
+.input-group textarea:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 8px;
+  font-size: 12px;
+  color: #00aaff;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #ccc;
+  position: absolute;
+  bottom: -18px;
+  right: 5px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background: #5865f2;
+  color: white;
+  cursor: pointer;
+}
+
+.clear-btn {
+  background: #a93226;
+}
+
+.code-output {
+  margin-top: 20px;
+  background: #1c1e22;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.code-output code {
+  display: block;
+  background: #0d1117;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  color: #00e1ff;
+  font-family: monospace;
+  word-wrap: break-word;
+}
+
+#copyCode {
+  margin-top: 10px;
+  background: #2ecc71;
+}
+
+.embed-preview {
+  background: #36393f;
+  border-left: 5px solid #7289da;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+footer {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 14px;
+  color: #bbb;
+}
+
+footer h3 {
+  color: #4aa3df;
+}
+
+.social-icons span {
+  font-size: 20px;
+  margin: 0 5px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #2ecc71;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  display: none;
+  z-index: 999;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin: 0 8px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 34px;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px; width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Modo claro */
+body.light {
+  background-color: #ffffff;
+  color: #111;
+}
+
+body.light .form-section,
+body.light .preview-section {
+  background: #f0f0f0;
+}
+
+body.light .input-group input,
+body.light .input-group textarea {
+  color: black;
+  background: white;
+}
+
+/* Estilos dinámicos para input color */
+.input-group input[type="color"] {
+  appearance: none;
+  border: 2px solid #555;
+  height: 35px;
+  border-radius: 5px;
+  padding: 0;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.input-group input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.input-group input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.input-group input[type="color"]:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+/* En modo claro */
+body.light .input-group input[type="color"] {
+  border-color: #ccc;
+}
+
+body.light .code-output {
+  background: #eee;
+}
+
+body.light .code-output code {
+  background: #ddd;
+  color: #222;
+}

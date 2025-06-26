@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LATAM Express Embed Editor</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <section class="form-section">
+      <h1>Crear Embed</h1>
+
+      <div class="input-group">
+        <input type="text" id="title" required placeholder />
+        <label for="title">Título </label>
+        <span class="char-count" id="titleCount">0/256</span>
+      </div>
+
+      <div class="input-group">
+        <textarea id="description" placeholder required></textarea>
+        <label for="description">Descripción</label>
+      </div>
+
+      <div class="input-group">
+        <input type="color" id="color" />
+        <label for="color">Color del borde</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="imageUrl" placeholder />
+        <label for="imageUrl">Imagen Principal</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="thumbnailUrl" placeholder />
+        <label for="thumbnailUrl">Thumbnail (esquina)</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="authorName" placeholder />
+        <label for="authorName">Nombre del autor</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="authorIcon" placeholder />
+        <label for="authorIcon">URL del icono del autor</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="footerText" placeholder />
+        <label for="footerText">Texto del footer</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="footerIcon" placeholder />
+        <label for="footerIcon">URL del icono del footer</label>
+      </div>
+
+      <div class="button-group">
+        <button id="generate">🎨 Generar Código</button>
+        <button id="clearFields" class="clear-btn">🧹 Limpiar Campos</button>
+      </div>
+
+      <div class="code-output" id="codeContainer" style="display: none;">
+        <h3>Código generado:</h3>
+        <code id="embedCode"></code>
+        <button id="copyCode">📋 Copiar</button>
+      </div>
+
+    </section>
+
+    <section class="preview-section">
+      <h2>Vista previa</h2>
+      <div id="embedPreview" class="embed-preview"></div>
+    </section>
+  </main>
+
+  <footer>
+    <h3>📘 LATAM Express Embed Editor</h3>
+    <p>Creado para Truckers!</p>
+    <div class="social-icons">
+      <span>📷</span>
+      <span>▶️</span>
+    </div>
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="themeToggle" />
+        <span class="slider round"></span>
+      </label>
+      <span>Modo Oscuro</span>
+    </div>
+    <p>By: Emmadness</p>
+  </footer>
+
+  <div id="toast" class="toast">📋 ¡Copiado al portapapeles!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
