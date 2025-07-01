@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  </head>
+  <!-- QuillJS CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
 <body>
   <main>
     <section class="form-section">
@@ -19,9 +21,11 @@
         <span class="char-count" id="titleCount">0/256</span>
       </div>
 
+      <!-- Reemplazamos el textarea por el editor Quill -->
       <div class="input-group">
-        <textarea id="description" placeholder required></textarea>
-        <label for="description">Descripción</label>
+        <label for="editor-container">Descripción</label>
+        <div id="editor-container" style="height: 200px; background-color: white; color: black;"></div>
+        <input type="hidden" id="description" />
       </div>
 
       <div class="input-group">
@@ -69,7 +73,6 @@
         <code id="embedCode"></code>
         <button id="copyCode">📋 Copiar</button>
       </div>
-
     </section>
 
     <section class="preview-section">
@@ -98,5 +101,28 @@
   <div id="toast" class="toast">📋 ¡Copiado al portapapeles!</div>
 
   <script src="script.js"></script>
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    // Inicializar Quill
+    const quill = new Quill('#editor-container', {
+      theme: 'snow',
+      placeholder: 'Escribe la descripción aquí...',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'header': [1, 2, 3, false] }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          ['blockquote', 'code-block'],
+          ['link', 'image'],
+          ['clean']
+        ]
+      }
+    });
+
+    // Actualizar el input oculto al generar código
+    document.getElementById('generate').addEventListener('click', () => {
+      document.getElementById('description').value = quill.root.innerHTML;
+    });
+  </script>
 </body>
 </html>
