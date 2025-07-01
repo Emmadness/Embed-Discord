@@ -1,37 +1,65 @@
-const express = require('express');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
-const path = require('path');
-
-const app = express();
-app.use(express.json());
-app.use(express.static('public'));
-
-// Ruta raíz para servir el index.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+document.getElementById('title').addEventListener('input', () => {
+  const title = document.getElementById('title').value;
+  document.getElementById('titleCount').textContent = `${title.length}/256`;
 });
 
-app.post('/api/create', (req, res) => {
-  const embed = req.body;
-  const code = uuidv4().replace(/-/g, '').substring(0, 32);
+document.getElementById('generate').addEventListener('click', () => {
+  const title = document.getElementById('title').value;
+  const description = document.getElementById('description').value;
+  const color = document.getElementById('color').value;
+  const image = document.getElementById('imageUrl').value;
+  const thumbnail = document.getElementById('thumbnailUrl').value;
+  const authorName = document.getElementById('authorName').value;
+  const authorIcon = document.getElementById('authorIcon').value;
+  const footerText = document.getElementById('footerText').value;
+  const footerIcon = document.getElementById('footerIcon').value;
 
-  const dbPath = './embeds.json';
-  const db = fs.existsSync(dbPath) ? JSON.parse(fs.readFileSync(dbPath, 'utf8')) : {};
-  db[code] = embed;
-  fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+  const embed = {
+    title,
+    description,
+    color,
+    image,
+    thumbnail,
+    author: { name: authorName, icon_url: authorIcon },
+    footer: { text: footerText, icon_url: footerIcon }
+  };
 
-  res.json({ code });
+  const code = JSON.stringify(embed, null, 2);
+  document.getElementById('embedCode').textContent = code;
+  document.getElementById('codeContainer').style.display = 'block';
+
+  // Vista previa
+  const preview = document.getElementById('embedPreview');
+  preview.innerHTML = `
+    <div class="embed" style="border-left: 4px solid ${color};">
+      ${authorName ? `<div class="author"><img src="${authorIcon}" /><span>${authorName}</span></div>` : ''}
+      ${title ? `<h3>${title}</h3>` : ''}
+      ${description ? `<div class="desc">${description}</div>` : ''}
+      ${image ? `<img src="${image}" class="main-image" />` : ''}
+      ${thumbnail ? `<img src="${thumbnail}" class="thumbnail" />` : ''}
+      ${footerText ? `<div class="footer"><img src="${footerIcon}" /><span>${footerText}</span></div>` : ''}
+    </div>
+  `;
 });
 
-app.get('/api/embed/:code', (req, res) => {
-  const db = JSON.parse(fs.readFileSync('./embeds.json', 'utf8'));
-  const embed = db[req.params.code];
-  if (!embed) return res.status(404).json({ error: 'No encontrado' });
-  res.json(embed);
+document.getElementById('clearFields').addEventListener('click', () => {
+  document.getElementById('title').value = '';
+  document.getElementById('description').value = '';
+  document.getElementById('color').value = '#000000';
+  document.getElementById('imageUrl').value = '';
+  document.getElementById('thumbnailUrl').value = '';
+  document.getElementById('authorName').value = '';
+  document.getElementById('authorIcon').value = '';
+  document.getElementById('footerText').value = '';
+  document.getElementById('footerIcon').value = '';
+  document.getElementById('embedPreview').innerHTML = '';
+  document.getElementById('codeContainer').style.display = 'none';
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🟢 Editor de embeds corriendo en http://localhost:${PORT}`);
+document.getElementById('copyCode').addEventListener('click', () => {
+  const code = document.getElementById('embedCode').textContent;
+  navigator.clipboard.writeText(code);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
 });
