@@ -1,3 +1,27 @@
+// Quill init
+const quill = new Quill('#descriptionEditor', {
+  theme: 'snow',
+  placeholder: 'Escribe la descripción aquí...',
+  modules: {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'header': [1, 2, 3, false] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      ['clean']
+    ]
+  }
+});
+
+// Actualizar descripción y contador
+quill.on('text-change', () => {
+  const html = quill.root.innerHTML;
+  const text = quill.getText().trim();
+  document.getElementById('description').value = html;
+  document.getElementById('descriptionCount').textContent = `${text.length}/4096`;
+});
+
 const fields = {
   title: document.getElementById('title'),
   description: document.getElementById('description'),
