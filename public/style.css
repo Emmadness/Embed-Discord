@@ -292,3 +292,20 @@ body.light .code-output code {
   border-top: 1px solid #555;
   margin: 10px 0;
 }
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%); /* para que se vean blancos en fondo oscuro */
+  transition: transform 0.2s ease;
+}
+
+.social-icon:hover {
+  transform: scale(1.1);
+}
