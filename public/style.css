@@ -134,6 +134,16 @@ footer {
   font-size: 14px;
   color: #bbb;
 }
+footer a {
+  color: inherit;           /* mismo color del texto */
+  text-decoration: none;    /* quita subrayado */
+  font-weight: bold;        /* mantiene en negrita */
+  transition: color 0.2s;
+}
+
+footer a:hover {
+  color: #4aa3df; /* color celeste al pasar el mouse */
+}
 
 footer h3 {
   color: #4aa3df;
