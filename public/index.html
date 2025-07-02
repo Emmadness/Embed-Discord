@@ -20,9 +20,28 @@
       </div>
 
       <div class="input-group">
-        <textarea id="description" placeholder required></textarea>
-        <label for="description">Descripción</label>
-      </div>
+  <div class="markdown-buttons">
+  <button type="button" onclick="insertMarkdown('bold')"><b>B</b></button>
+  <button type="button" onclick="insertMarkdown('italic')"><i>I</i></button>
+  <button type="button" onclick="insertMarkdown('strike')"><s>S</s></button>
+  <button type="button" onclick="insertMarkdown('underline')"><u>U</u></button>
+  <button type="button" onclick="insertMarkdown('mono')">`Mono`</button>
+  <button type="button" onclick="insertMarkdown('block')">📦 Bloque</button>
+  <button type="button" onclick="insertMarkdown('newline')">↵ Salto</button>
+  <button type="button" onclick="insertMarkdown('upper')">🔠 MAY</button>
+  <button type="button" onclick="insertMarkdown('lower')">🔡 min</button>
+    <button onclick="insertMarkdown('quote')">❝ Cita</button>
+  <button onclick="insertMarkdown('ulist')">• Lista</button>
+  <button onclick="insertMarkdown('olist')">1. Lista</button>
+  <button onclick="insertMarkdown('link')">🔗 Link</button>
+  <button onclick="insertMarkdown('image')">🖼️ Img</button>
+  <button onclick="insertMarkdown('hr')">— Línea</button>
+</div>
+
+  <textarea id="description" placeholder="Contenido..." required></textarea>
+
+</div>
+
 
       <div class="input-group">
         <input type="color" id="color" />
