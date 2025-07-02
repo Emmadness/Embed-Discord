@@ -255,25 +255,3 @@ body.light .code-output code {
   background: #ddd;
   color: #222;
 }
-/* Quill personalizado en modo oscuro */
-.quill-editor {
-  background-color: #1e1e1e;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 10px;
-  min-height: 150px;
-  font-family: 'Poppins', sans-serif;
-}
-
-.ql-toolbar.ql-snow {
-  background-color: #2c2c2c;
-  border: 1px solid #444;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.ql-container.ql-snow {
-  border: none;
-}
-
