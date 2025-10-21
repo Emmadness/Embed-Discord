@@ -355,3 +355,16 @@ body.light .code-output code {
   transform: scale(1.1); /* agrandar un poco */
   filter: brightness(1.3); /* ilumina un poco el logo */
 }
+
+.mention-preview {
+  color: #00afff;
+  margin-bottom: 8px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+body.light .mention-preview {
+  color: #0066cc;
+}
+
+
