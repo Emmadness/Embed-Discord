@@ -62,7 +62,7 @@ function updatePreview() {
 
   const title = fields.title.value ? `<h3>${fields.title.value}</h3>` : '';
 
-  const description = formatMarkdown(fields.description.value); // aquí usamos el markdown
+  const description = formatMarkdown(fields.description.value);
 
   const image = fields.imageUrl.value
     ? `<img src="${fields.imageUrl.value}" style="width:100%;border-radius:5px;margin-top:10px;">` : '';
@@ -77,15 +77,21 @@ function updatePreview() {
        </div>` : '';
 
   container.innerHTML = `${thumbnail}${author}${title}<p>${description}</p>${image}${footer}`;
+
+  // 👇 Mostrar menciones arriba del embed si existen
   if (fields.mentions.value.trim()) {
-  const mentionDiv = document.createElement('div');
-  mentionDiv.style.marginBottom = '10px';
-  mentionDiv.style.color = '#00afff';
-  mentionDiv.style.fontWeight = 'bold';
-  mentionDiv.textContent = fields.mentions.value;
-  preview.appendChild(mentionDiv);
+    const mentionDiv = document.createElement('div');
+    mentionDiv.style.marginBottom = '10px';
+    mentionDiv.style.color = '#00afff';
+    mentionDiv.style.fontWeight = 'bold';
+    mentionDiv.textContent = fields.mentions.value;
+    preview.appendChild(mentionDiv);
+  }
+
+  // 👇 Agregar el embed siempre
   preview.appendChild(container);
 }
+
 
 Object.values(fields).forEach(field => field.addEventListener('input', updatePreview));
 
@@ -322,6 +328,7 @@ function toggleWrapper(text, wrapper) {
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
+
 
 
 
