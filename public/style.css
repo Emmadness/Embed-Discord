@@ -355,3 +355,10 @@ body.light .code-output code {
   transform: scale(1.1); /* agrandar un poco */
   filter: brightness(1.3); /* ilumina un poco el logo */
 }
+
+.external-preview {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #555;
+}
+
