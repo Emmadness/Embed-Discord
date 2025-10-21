@@ -10,43 +10,25 @@ const fields = {
   footerIcon: document.getElementById('footerIcon')
 };
 
-// NUEVO: Función para parsear Markdown básico
+// NUEVO: Función para parsear Markdown básico (igual que antes)
 function formatMarkdown(text) {
   return text
-    // Bloque de código (triple tilde)
     .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
-    // Código inline
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Negrita
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Cursiva
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Tachado
     .replace(/~~(.*?)~~/g, '<s>$1</s>')
-    // Subrayado
     .replace(/__(.*?)__/g, '<u>$1</u>')
-    // Cita (blockquote)
     .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-    // Lista numerada
-    .replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')
-    // Lista con viñetas
-    .replace(/^- (.*)$/gm, '<li>$1</li>')
-    // Agrupar <li> en <ul> o <ol>
-    .replace(/(<li>.*<\/li>)/gs, match => {
-      const isOrdered = /^\d+\./.test(match);
-      const tag = isOrdered ? 'ol' : 'ul';
-      return `<${tag}>${match}</${tag}>`;
-    })
-    // Links
+    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
+      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
+    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
+      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // Imágenes
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
-    // Línea horizontal
     .replace(/^---$/gm, '<hr>')
-    // Saltos de línea
     .replace(/\n/g, '<br>');
 }
-
 
 function updatePreview() {
   const preview = document.getElementById('embedPreview');
@@ -61,7 +43,7 @@ function updatePreview() {
 
   const title = fields.title.value ? `<h3>${fields.title.value}</h3>` : '';
 
-  const description = formatMarkdown(fields.description.value); // aquí usamos el markdown
+  const description = formatMarkdown(fields.description.value);
 
   const image = fields.imageUrl.value
     ? `<img src="${fields.imageUrl.value}" style="width:100%;border-radius:5px;margin-top:10px;">` : '';
@@ -95,7 +77,8 @@ document.getElementById('generate').addEventListener('click', async () => {
     footer: {
       text: fields.footerText.value,
       icon_url: fields.footerIcon.value
-    }
+    },
+    mentions: document.getElementById('mentions').value // NUEVO
   };
 
   const response = await fetch('/api/create', {
@@ -121,12 +104,13 @@ document.getElementById('copyCode').addEventListener('click', () => {
   });
 });
 
-
 document.getElementById('clearFields').addEventListener('click', () => {
   Object.values(fields).forEach(field => field.value = '');
+  document.getElementById('mentions').value = ''; // NUEVO
   updatePreview();
   document.getElementById('embedCode').textContent = '';
   document.getElementById('codeContainer').style.display = 'none';
+
 });
 function formatMarkdown(text) {
   return text
@@ -306,6 +290,7 @@ function toggleWrapper(text, wrapper) {
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
+
 
 
 
