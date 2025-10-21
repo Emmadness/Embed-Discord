@@ -8,10 +8,10 @@ const fields = {
   authorIcon: document.getElementById('authorIcon'),
   footerText: document.getElementById('footerText'),
   footerIcon: document.getElementById('footerIcon'),
-  externalText: document.getElementById('externalText') // NUEVO campo para texto fuera del embed
+  externalText: document.getElementById('externalText')
 };
 
-// Función para parsear Markdown
+// Función para parsear Markdown básico
 function formatMarkdown(text) {
   return text
     .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
@@ -31,18 +31,13 @@ function formatMarkdown(text) {
     .replace(/\n/g, '<br>');
 }
 
-// Actualizar la vista previa
+// Actualizar preview en la web
 function updatePreview() {
   const preview = document.getElementById('embedPreview');
+  const externalPreview = document.getElementById('externalPreview');
   preview.innerHTML = '';
+  externalPreview.textContent = fields.externalText.value;
 
-  // Mostrar texto externo primero
-  const externalDiv = document.createElement('div');
-  externalDiv.textContent = fields.externalText.value;
-  externalDiv.style.marginBottom = '8px';
-  preview.appendChild(externalDiv);
-
-  // Crear contenedor del embed
   const container = document.createElement('div');
   container.classList.add('embed-preview');
   container.style.borderLeftColor = fields.color.value;
@@ -51,7 +46,6 @@ function updatePreview() {
     ? `<div><strong>${fields.authorName.value}</strong></div>` : '';
 
   const title = fields.title.value ? `<h3>${fields.title.value}</h3>` : '';
-
   const description = formatMarkdown(fields.description.value);
 
   const image = fields.imageUrl.value
@@ -70,29 +64,28 @@ function updatePreview() {
   preview.appendChild(container);
 }
 
-// Listeners para actualizar preview
 Object.values(fields).forEach(field => field.addEventListener('input', updatePreview));
 
-// Generar código completo (texto externo + embed)
+// Generar código JSON listo para enviar al bot
 document.getElementById('generate').addEventListener('click', () => {
-  const externalText = fields.externalText.value;
+  const embed = {};
 
-  // Construir HTML del embed
-  const embedHTML = `
-<div class="embed-preview" style="border-left: 4px solid ${fields.color.value}; padding: 10px; border-radius: 5px;">
-  ${fields.thumbnailUrl.value ? `<img src="${fields.thumbnailUrl.value}" style="float:right;width:60px;height:60px;margin-left:10px;border-radius:5px;">` : ''}
-  ${fields.authorName.value ? `<div><strong>${fields.authorName.value}</strong></div>` : ''}
-  ${fields.title.value ? `<h3>${fields.title.value}</h3>` : ''}
-  <p>${formatMarkdown(fields.description.value)}</p>
-  ${fields.imageUrl.value ? `<img src="${fields.imageUrl.value}" style="width:100%;border-radius:5px;margin-top:10px;">` : ''}
-  ${fields.footerText.value ? `<div style="margin-top:10px;font-size:12px;color:#aaa;">${fields.footerIcon.value ? `<img src="${fields.footerIcon.value}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;margin-right:5px;">` : ''}${fields.footerText.value}</div>` : ''}
-</div>
-`;
+  if (fields.title.value) embed.title = fields.title.value;
+  if (fields.description.value) embed.description = fields.description.value;
+  if (fields.color.value) embed.color = parseInt(fields.color.value.replace('#',''), 16);
+  if (fields.imageUrl.value) embed.image = { url: fields.imageUrl.value };
+  if (fields.thumbnailUrl.value) embed.thumbnail = { url: fields.thumbnailUrl.value };
+  if (fields.authorName.value) embed.author = { name: fields.authorName.value };
+  if (fields.authorIcon.value) embed.author = { ...(embed.author || {}), icon_url: fields.authorIcon.value };
+  if (fields.footerText.value) embed.footer = { text: fields.footerText.value };
+  if (fields.footerIcon.value) embed.footer = { ...(embed.footer || {}), icon_url: fields.footerIcon.value };
 
-  // Juntar texto externo + embed
-  document.getElementById('embedCode').textContent =
-    (externalText ? externalText + '\n' : '') + embedHTML;
+  const finalJSON = {
+    content: fields.externalText.value || '',
+    embeds: embed.title || embed.description || embed.color || embed.image || embed.thumbnail || embed.author || embed.footer ? [embed] : []
+  };
 
+  document.getElementById('embedCode').textContent = JSON.stringify(finalJSON, null, 2);
   document.getElementById('codeContainer').style.display = 'block';
 });
 
@@ -102,9 +95,7 @@ document.getElementById('copyCode').addEventListener('click', () => {
   navigator.clipboard.writeText(text).then(() => {
     const toast = document.getElementById('toast');
     toast.style.display = 'block';
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 2500);
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
   });
 });
 
@@ -116,9 +107,7 @@ document.getElementById('clearFields').addEventListener('click', () => {
   document.getElementById('codeContainer').style.display = 'none';
 });
 
-// Funciones insertMarkdown, toggleWrapper, escapeRegex se mantienen iguales
-function insertMarkdown(action) { /* ...igual que tu código base... */ }
-function toggleWrapper(text, wrapper) { /* ...igual que tu código base... */ }
-function escapeRegex(str) { return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); }
-
-
+// --- Markdown helpers ---
+function insertMarkdown(action) { /* tu código de Markdown aquí, sin cambios */ }
+function toggleWrapper(text, wrapper) { /* tu código aquí */ }
+function escapeRegex(str) { /* tu código aquí */ }
