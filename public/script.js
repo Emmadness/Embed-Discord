@@ -8,6 +8,7 @@ const fields = {
   authorIcon: document.getElementById('authorIcon'),
   footerText: document.getElementById('footerText'),
   footerIcon: document.getElementById('footerIcon')
+  mentions: document.getElementById('mentions')
 };
 
 // NUEVO: Función para parsear Markdown básico
@@ -76,6 +77,13 @@ function updatePreview() {
        </div>` : '';
 
   container.innerHTML = `${thumbnail}${author}${title}<p>${description}</p>${image}${footer}`;
+  if (fields.mentions.value.trim()) {
+  const mentionDiv = document.createElement('div');
+  mentionDiv.style.marginBottom = '10px';
+  mentionDiv.style.color = '#00afff';
+  mentionDiv.style.fontWeight = 'bold';
+  mentionDiv.textContent = fields.mentions.value;
+  preview.appendChild(mentionDiv);
   preview.appendChild(container);
 }
 
@@ -105,9 +113,16 @@ document.getElementById('generate').addEventListener('click', async () => {
   });
 
   const data = await response.json();
-  const code = data.code;
-  document.getElementById('embedCode').textContent = code;
-  document.getElementById('codeContainer').style.display = 'block';
+let code = data.code;
+
+// 👇 Añadimos las menciones antes del embed
+if (fields.mentions.value.trim()) {
+  code = `${fields.mentions.value}\n\n${code}`;
+}
+
+document.getElementById('embedCode').textContent = code;
+document.getElementById('codeContainer').style.display = 'block';
+
 });
 
 document.getElementById('copyCode').addEventListener('click', () => {
@@ -128,6 +143,7 @@ document.getElementById('clearFields').addEventListener('click', () => {
   document.getElementById('embedCode').textContent = '';
   document.getElementById('codeContainer').style.display = 'none';
 });
+
 function formatMarkdown(text) {
   return text
     // Bloque de código (triple tilde)
@@ -306,6 +322,7 @@ function toggleWrapper(text, wrapper) {
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
+
 
 
 
