@@ -98,26 +98,17 @@ document.getElementById('generate').addEventListener('click', async () => {
     }
   };
 
-  const outsideText = document.getElementById('outsideText').value;
+  const response = await fetch('/api/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(embed)
+  });
 
-  // Supongamos que quieres generar un bloque HTML que contenga ambos
-  const code = `
-<div>
-  <p>${outsideText}</p>
-  <div style="border-left: 4px solid ${fields.color.value}; padding: 10px;">
-    <h3>${embed.title || ''}</h3>
-    <p>${embed.description || ''}</p>
-    ${embed.image.url ? `<img src="${embed.image.url}" style="width:100%; border-radius:5px;">` : ''}
-    ${embed.thumbnail.url ? `<img src="${embed.thumbnail.url}" style="float:right;width:60px;height:60px;margin-left:10px;border-radius:5px;">` : ''}
-    ${embed.footer.text ? `<div style="font-size:12px;color:#aaa;">${embed.footer.text}</div>` : ''}
-  </div>
-</div>
-  `;
-
+  const data = await response.json();
+  const code = data.code;
   document.getElementById('embedCode').textContent = code;
   document.getElementById('codeContainer').style.display = 'block';
 });
-
 
 document.getElementById('copyCode').addEventListener('click', () => {
   const text = document.getElementById('embedCode').textContent;
@@ -315,7 +306,6 @@ function toggleWrapper(text, wrapper) {
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
-
 
 
 
