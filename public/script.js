@@ -11,10 +11,10 @@ const fields = {
   mentions: document.getElementById('mentions')
 };
 
-// NUEVO: Función para parsear Markdown básico
+// ✅ Markdown parser único (funciona con vista previa)
 function formatMarkdown(text) {
   return text
-    // Bloque de código (triple tilde)
+    // Bloque de código
     .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
     // Código inline
     .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -26,18 +26,14 @@ function formatMarkdown(text) {
     .replace(/~~(.*?)~~/g, '<s>$1</s>')
     // Subrayado
     .replace(/__(.*?)__/g, '<u>$1</u>')
-    // Cita (blockquote)
+    // Cita
     .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-    // Lista numerada
-    .replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')
-    // Lista con viñetas
-    .replace(/^- (.*)$/gm, '<li>$1</li>')
-    // Agrupar <li> en <ul> o <ol>
-    .replace(/(<li>.*<\/li>)/gs, match => {
-      const isOrdered = /^\d+\./.test(match);
-      const tag = isOrdered ? 'ol' : 'ul';
-      return `<${tag}>${match}</${tag}>`;
-    })
+    // Viñetas agrupadas
+    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
+      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
+    // Numeradas agrupadas
+    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
+      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
     // Links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
     // Imágenes
@@ -48,7 +44,7 @@ function formatMarkdown(text) {
     .replace(/\n/g, '<br>');
 }
 
-
+// ✅ Actualizar vista previa en tiempo real
 function updatePreview() {
   const preview = document.getElementById('embedPreview');
   preview.innerHTML = '';
@@ -78,7 +74,6 @@ function updatePreview() {
 
   container.innerHTML = `${thumbnail}${author}${title}<p>${description}</p>${image}${footer}`;
 
-  // 👇 Mostrar menciones arriba del embed si existen
   if (fields.mentions.value.trim()) {
     const mentionDiv = document.createElement('div');
     mentionDiv.style.marginBottom = '10px';
@@ -88,13 +83,12 @@ function updatePreview() {
     preview.appendChild(mentionDiv);
   }
 
-  // 👇 Agregar el embed siempre
   preview.appendChild(container);
 }
 
-
 Object.values(fields).forEach(field => field.addEventListener('input', updatePreview));
 
+// ✅ Generar código del embed
 document.getElementById('generate').addEventListener('click', async () => {
   const embed = {
     title: fields.title.value,
@@ -119,18 +113,17 @@ document.getElementById('generate').addEventListener('click', async () => {
   });
 
   const data = await response.json();
-let code = data.code;
+  let code = data.code;
 
-// 👇 Añadimos las menciones antes del embed
-if (fields.mentions.value.trim()) {
-  code = `${fields.mentions.value}\n\n${code}`;
-}
+  if (fields.mentions.value.trim()) {
+    code = `${fields.mentions.value}\n\n${code}`;
+  }
 
-document.getElementById('embedCode').textContent = code;
-document.getElementById('codeContainer').style.display = 'block';
-
+  document.getElementById('embedCode').textContent = code;
+  document.getElementById('codeContainer').style.display = 'block';
 });
 
+// ✅ Copiar código con toast
 document.getElementById('copyCode').addEventListener('click', () => {
   const text = document.getElementById('embedCode').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -142,7 +135,7 @@ document.getElementById('copyCode').addEventListener('click', () => {
   });
 });
 
-
+// ✅ Limpiar campos
 document.getElementById('clearFields').addEventListener('click', () => {
   Object.values(fields).forEach(field => field.value = '');
   updatePreview();
@@ -150,103 +143,24 @@ document.getElementById('clearFields').addEventListener('click', () => {
   document.getElementById('codeContainer').style.display = 'none';
 });
 
-function formatMarkdown(text) {
-  return text
-    // Bloque de código (triple tilde)
-    .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
-    // Código inline
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Negrita
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Cursiva
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Tachado
-    .replace(/~~(.*?)~~/g, '<s>$1</s>')
-    // Subrayado
-    .replace(/__(.*?)__/g, '<u>$1</u>')
-    // Cita
-    .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-    // Viñetas: agrupar en <ul>
-    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
-      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
-    // Numeradas: agrupar en <ol>
-    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
-      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // Imágenes
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
-    // Línea horizontal
-    .replace(/^---$/gm, '<hr>')
-    // Saltos de línea
-    .replace(/\n/g, '<br>');
-}
-
-function formatMarkdown(text) {
-  return text
-    // Bloque de código (triple tilde)
-    .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
-    // Código inline
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Negrita
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Cursiva
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Tachado
-    .replace(/~~(.*?)~~/g, '<s>$1</s>')
-    // Subrayado
-    .replace(/__(.*?)__/g, '<u>$1</u>')
-    // Cita
-    .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-    // Viñetas: agrupar en <ul>
-    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
-      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
-    // Numeradas: agrupar en <ol>
-    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
-      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // Imágenes
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
-    // Línea horizontal
-    .replace(/^---$/gm, '<hr>')
-    // Saltos de línea
-    .replace(/\n/g, '<br>');
-}
-
+// ✅ Función única para insertar Markdown
 function insertMarkdown(action) {
   const textarea = document.getElementById('description');
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
   const selected = textarea.value.substring(start, end);
-
-  if (!selected && !['newline', 'hr'].includes(action)) return;
-
   let result = selected;
 
   switch (action) {
-    case 'bold':
-      result = toggleWrapper(selected, '**');
-      break;
-    case 'italic':
-      result = toggleWrapper(selected, '*');
-      break;
-    case 'strike':
-      result = toggleWrapper(selected, '~~');
-      break;
-    case 'underline':
-      result = toggleWrapper(selected, '__');
-      break;
-    case 'mono':
-      result = toggleWrapper(selected, '`');
-      break;
+    case 'bold': result = toggleWrapper(selected, '**'); break;
+    case 'italic': result = toggleWrapper(selected, '*'); break;
+    case 'strike': result = toggleWrapper(selected, '~~'); break;
+    case 'underline': result = toggleWrapper(selected, '__'); break;
+    case 'mono': result = toggleWrapper(selected, '`'); break;
     case 'block':
       result = selected.startsWith('```\n') && selected.endsWith('\n```')
         ? selected.slice(4, -4)
         : `\`\`\`\n${selected}\n\`\`\``;
-      break;
-    case 'newline':
-      result = start === end ? '\n' : selected + '\n';
       break;
     case 'quote':
       result = selected
@@ -270,67 +184,26 @@ function insertMarkdown(action) {
           }).join('\n')
         : '1. Ítem numerado';
       break;
-    case 'link': {
-      const linkRegex = /^\[([^\]]+)\]\(([^)]+)\)$/;
-      result = linkRegex.test(selected)
-        ? selected.replace(linkRegex, '$1')
-        : `[${selected || 'texto'}](https://url.com)`;
-      break;
-    }
-    case 'image': {
-      const imgRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/;
-      result = imgRegex.test(selected)
-        ? selected.replace(imgRegex, '$1')
-        : `![${selected || 'alt'}](https://img-url.com)`;
-      break;
-    }
-    case 'hr':
-      result = '\n---\n';
-      break;
-    case 'upper':
-      result = selected.toUpperCase();
-      break;
-    case 'lower':
-      result = selected.toLowerCase();
-      break;
-    default:
-      return;
+    case 'link':
+      result = `[${selected || 'texto'}](https://url.com)`; break;
+    case 'image':
+      result = `![${selected || 'alt'}](https://img-url.com)`; break;
+    case 'hr': result = '\n---\n'; break;
+    case 'upper': result = selected.toUpperCase(); break;
+    case 'lower': result = selected.toLowerCase(); break;
+    default: return;
   }
 
   textarea.setRangeText(result, start, end, 'select');
-  const newEnd = start + result.length;
-  textarea.setSelectionRange(start, newEnd);
-  textarea.focus();
   textarea.dispatchEvent(new Event('input'));
 }
 
 function toggleWrapper(text, wrapper) {
-  const lines = text.split('\n');
-
-  // Si TODAS las líneas ya tienen el wrapper, lo quitamos
-  const allWrapped = lines.every(line =>
-    new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`).test(line)
-  );
-
-  return lines
-    .map(line => {
-      const regex = new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`);
-      if (allWrapped && regex.test(line)) {
-        return line.replace(regex, '$1'); // quitar
-      } else {
-        return `${wrapper}${line}${wrapper}`; // aplicar
-      }
-    })
-    .join('\n');
+  const regex = new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`);
+  if (regex.test(text)) return text.replace(regex, '$1');
+  return `${wrapper}${text}${wrapper}`;
 }
-
 
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
-
-
-
-
-
-
