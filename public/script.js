@@ -1,4 +1,3 @@
-// --- CAMPOS DEL EMBED ---
 const fields = {
   title: document.getElementById('title'),
   description: document.getElementById('description'),
@@ -11,41 +10,47 @@ const fields = {
   footerIcon: document.getElementById('footerIcon')
 };
 
-// --- NUEVO: Mensaje normal fuera del embed ---
-const plainMessage = document.getElementById('plainMessage');
-
-// --- FORMATEO DE MARKDOWN ---
+// NUEVO: Función para parsear Markdown básico
 function formatMarkdown(text) {
   return text
+    // Bloque de código (triple tilde)
     .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
+    // Código inline
     .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Negrita
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Cursiva
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Tachado
     .replace(/~~(.*?)~~/g, '<s>$1</s>')
+    // Subrayado
     .replace(/__(.*?)__/g, '<u>$1</u>')
+    // Cita (blockquote)
     .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
-      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
-    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
-      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
+    // Lista numerada
+    .replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')
+    // Lista con viñetas
+    .replace(/^- (.*)$/gm, '<li>$1</li>')
+    // Agrupar <li> en <ul> o <ol>
+    .replace(/(<li>.*<\/li>)/gs, match => {
+      const isOrdered = /^\d+\./.test(match);
+      const tag = isOrdered ? 'ol' : 'ul';
+      return `<${tag}>${match}</${tag}>`;
+    })
+    // Links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // Imágenes
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
+    // Línea horizontal
     .replace(/^---$/gm, '<hr>')
+    // Saltos de línea
     .replace(/\n/g, '<br>');
 }
 
-// --- ACTUALIZAR VISTA PREVIA ---
+
 function updatePreview() {
   const preview = document.getElementById('embedPreview');
   preview.innerHTML = '';
-
-  // Mostrar mensaje normal (opcional)
-  if (plainMessage.value) {
-    const msgDiv = document.createElement('div');
-    msgDiv.textContent = plainMessage.value;
-    msgDiv.style.marginBottom = '10px';
-    preview.appendChild(msgDiv);
-  }
 
   const container = document.createElement('div');
   container.classList.add('embed-preview');
@@ -55,7 +60,8 @@ function updatePreview() {
     ? `<div><strong>${fields.authorName.value}</strong></div>` : '';
 
   const title = fields.title.value ? `<h3>${fields.title.value}</h3>` : '';
-  const description = formatMarkdown(fields.description.value);
+
+  const description = formatMarkdown(fields.description.value); // aquí usamos el markdown
 
   const image = fields.imageUrl.value
     ? `<img src="${fields.imageUrl.value}" style="width:100%;border-radius:5px;margin-top:10px;">` : '';
@@ -73,11 +79,8 @@ function updatePreview() {
   preview.appendChild(container);
 }
 
-// --- ESCUCHAR CAMBIOS EN CAMPOS ---
 Object.values(fields).forEach(field => field.addEventListener('input', updatePreview));
-plainMessage.addEventListener('input', updatePreview);
 
-// --- GENERAR CÓDIGO ---
 document.getElementById('generate').addEventListener('click', async () => {
   const embed = {
     title: fields.title.value,
@@ -95,45 +98,100 @@ document.getElementById('generate').addEventListener('click', async () => {
     }
   };
 
-  const payload = {
-    message: plainMessage.value, // mensaje normal
-    embed: embed
-  };
-
   const response = await fetch('/api/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(embed)
   });
 
   const data = await response.json();
   const code = data.code;
-
-  // Mostrar mensaje normal + embed en el código
-  document.getElementById('embedCode').textContent = `${plainMessage.value}\n${code}`;
+  document.getElementById('embedCode').textContent = code;
   document.getElementById('codeContainer').style.display = 'block';
 });
 
-// --- COPIAR AL PORTAPAPELES ---
 document.getElementById('copyCode').addEventListener('click', () => {
   const text = document.getElementById('embedCode').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const toast = document.getElementById('toast');
     toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 2500);
   });
 });
 
-// --- LIMPIAR CAMPOS ---
+
 document.getElementById('clearFields').addEventListener('click', () => {
   Object.values(fields).forEach(field => field.value = '');
-  plainMessage.value = '';
   updatePreview();
   document.getElementById('embedCode').textContent = '';
   document.getElementById('codeContainer').style.display = 'none';
 });
+function formatMarkdown(text) {
+  return text
+    // Bloque de código (triple tilde)
+    .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
+    // Código inline
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Negrita
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Cursiva
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Tachado
+    .replace(/~~(.*?)~~/g, '<s>$1</s>')
+    // Subrayado
+    .replace(/__(.*?)__/g, '<u>$1</u>')
+    // Cita
+    .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
+    // Viñetas: agrupar en <ul>
+    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
+      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
+    // Numeradas: agrupar en <ol>
+    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
+      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // Imágenes
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
+    // Línea horizontal
+    .replace(/^---$/gm, '<hr>')
+    // Saltos de línea
+    .replace(/\n/g, '<br>');
+}
 
-// --- FUNCIONES DE MARKDOWN ---
+function formatMarkdown(text) {
+  return text
+    // Bloque de código (triple tilde)
+    .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
+    // Código inline
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Negrita
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Cursiva
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Tachado
+    .replace(/~~(.*?)~~/g, '<s>$1</s>')
+    // Subrayado
+    .replace(/__(.*?)__/g, '<u>$1</u>')
+    // Cita
+    .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
+    // Viñetas: agrupar en <ul>
+    .replace(/^(- .*(?:\n- .*)*)/gm, match =>
+      `<ul>${match.replace(/^-\s+(.*)$/gm, '<li>$1</li>')}</ul>`)
+    // Numeradas: agrupar en <ol>
+    .replace(/^(\d+\..*(?:\n\d+\..*)*)/gm, match =>
+      `<ol>${match.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>')}</ol>`)
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // Imágenes
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:5px;margin-top:10px;">')
+    // Línea horizontal
+    .replace(/^---$/gm, '<hr>')
+    // Saltos de línea
+    .replace(/\n/g, '<br>');
+}
+
 function insertMarkdown(action) {
   const textarea = document.getElementById('description');
   const start = textarea.selectionStart;
@@ -145,22 +203,76 @@ function insertMarkdown(action) {
   let result = selected;
 
   switch (action) {
-    case 'bold': result = toggleWrapper(selected, '**'); break;
-    case 'italic': result = toggleWrapper(selected, '*'); break;
-    case 'strike': result = toggleWrapper(selected, '~~'); break;
-    case 'underline': result = toggleWrapper(selected, '__'); break;
-    case 'mono': result = toggleWrapper(selected, '`'); break;
-    case 'block': result = selected.startsWith('```\n') && selected.endsWith('\n```') ? selected.slice(4, -4) : `\`\`\`\n${selected}\n\`\`\``; break;
-    case 'newline': result = start === end ? '\n' : selected + '\n'; break;
-    case 'quote': result = selected ? selected.split('\n').map(line => line.trim().startsWith('>') ? line.replace(/^\s*>+\s?/, '') : `> ${line}`).join('\n') : '> Cita aquí'; break;
-    case 'ulist': result = selected ? selected.split('\n').map(line => line.startsWith('- ') ? line.slice(2) : `- ${line}`).join('\n') : '- Ítem'; break;
-    case 'olist': result = selected ? selected.split('\n').map((line, i) => { const regex = /^\d+\.\s+/; return regex.test(line) ? line.replace(regex, '') : `${i+1}. ${line}`; }).join('\n') : '1. Ítem numerado'; break;
-    case 'link': { const linkRegex = /^\[([^\]]+)\]\(([^)]+)\)$/; result = linkRegex.test(selected) ? selected.replace(linkRegex, '$1') : `[${selected || 'texto'}](https://url.com)`; break; }
-    case 'image': { const imgRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/; result = imgRegex.test(selected) ? selected.replace(imgRegex, '$1') : `![${selected || 'alt'}](https://img-url.com)`; break; }
-    case 'hr': result = '\n---\n'; break;
-    case 'upper': result = selected.toUpperCase(); break;
-    case 'lower': result = selected.toLowerCase(); break;
-    default: return;
+    case 'bold':
+      result = toggleWrapper(selected, '**');
+      break;
+    case 'italic':
+      result = toggleWrapper(selected, '*');
+      break;
+    case 'strike':
+      result = toggleWrapper(selected, '~~');
+      break;
+    case 'underline':
+      result = toggleWrapper(selected, '__');
+      break;
+    case 'mono':
+      result = toggleWrapper(selected, '`');
+      break;
+    case 'block':
+      result = selected.startsWith('```\n') && selected.endsWith('\n```')
+        ? selected.slice(4, -4)
+        : `\`\`\`\n${selected}\n\`\`\``;
+      break;
+    case 'newline':
+      result = start === end ? '\n' : selected + '\n';
+      break;
+    case 'quote':
+      result = selected
+        ? selected.split('\n').map(line =>
+            line.trim().startsWith('>') ? line.replace(/^\s*>+\s?/, '') : `> ${line}`
+          ).join('\n')
+        : '> Cita aquí';
+      break;
+    case 'ulist':
+      result = selected
+        ? selected.split('\n').map(line =>
+            line.startsWith('- ') ? line.slice(2) : `- ${line}`
+          ).join('\n')
+        : '- Ítem';
+      break;
+    case 'olist':
+      result = selected
+        ? selected.split('\n').map((line, i) => {
+            const regex = /^\d+\.\s+/;
+            return regex.test(line) ? line.replace(regex, '') : `${i + 1}. ${line}`;
+          }).join('\n')
+        : '1. Ítem numerado';
+      break;
+    case 'link': {
+      const linkRegex = /^\[([^\]]+)\]\(([^)]+)\)$/;
+      result = linkRegex.test(selected)
+        ? selected.replace(linkRegex, '$1')
+        : `[${selected || 'texto'}](https://url.com)`;
+      break;
+    }
+    case 'image': {
+      const imgRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/;
+      result = imgRegex.test(selected)
+        ? selected.replace(imgRegex, '$1')
+        : `![${selected || 'alt'}](https://img-url.com)`;
+      break;
+    }
+    case 'hr':
+      result = '\n---\n';
+      break;
+    case 'upper':
+      result = selected.toUpperCase();
+      break;
+    case 'lower':
+      result = selected.toLowerCase();
+      break;
+    default:
+      return;
   }
 
   textarea.setRangeText(result, start, end, 'select');
@@ -172,14 +284,28 @@ function insertMarkdown(action) {
 
 function toggleWrapper(text, wrapper) {
   const lines = text.split('\n');
-  const allWrapped = lines.every(line => new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`).test(line));
-  return lines.map(line => {
-    const regex = new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`);
-    if (allWrapped && regex.test(line)) return line.replace(regex, '$1'); 
-    else return `${wrapper}${line}${wrapper}`;
-  }).join('\n');
+
+  // Si TODAS las líneas ya tienen el wrapper, lo quitamos
+  const allWrapped = lines.every(line =>
+    new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`).test(line)
+  );
+
+  return lines
+    .map(line => {
+      const regex = new RegExp(`^${escapeRegex(wrapper)}(.+?)${escapeRegex(wrapper)}$`);
+      if (allWrapped && regex.test(line)) {
+        return line.replace(regex, '$1'); // quitar
+      } else {
+        return `${wrapper}${line}${wrapper}`; // aplicar
+      }
+    })
+    .join('\n');
 }
+
 
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
+
+
+
