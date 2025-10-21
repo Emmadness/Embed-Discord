@@ -2,96 +2,129 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LATAM Express Embed Editor</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rotra Club ® Embed Editor</title>
   <link rel="stylesheet" href="style.css" />
-</head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  </head>
 <body>
-  <header>
-    <h1>LATAM Express Embed Editor</h1>
-    <p>Created with love and passion ❤️</p>
-  </header>
-
   <main>
-    <div class="editor-container">
-      <div class="inputs">
-        <div class="input-group">
-          <input type="text" id="title" placeholder="Título del embed" />
-          <label for="title">Título</label>
-        </div>
+    <section class="form-section">
+      <h1>Crear Embed</h1>
 
-        <!-- Nuevo campo para menciones fuera del embed -->
-        <div class="input-group">
-          <input type="text" id="mentions" placeholder="@everyone o <@&1234567890>" />
-          <label for="mentions">Menciones fuera del embed</label>
-        </div>
-
-        <div class="input-group">
-          <textarea id="description" placeholder="Descripción del embed"></textarea>
-          <label for="description">Descripción</label>
-        </div>
-
-        <div class="input-group">
-          <input type="color" id="color" value="#00afff" />
-          <label for="color">Color</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="imageUrl" placeholder="URL de imagen" />
-          <label for="imageUrl">Imagen principal</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="thumbnailUrl" placeholder="URL del thumbnail" />
-          <label for="thumbnailUrl">Thumbnail</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="authorName" placeholder="Nombre del autor" />
-          <label for="authorName">Autor</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="authorIcon" placeholder="URL del ícono del autor" />
-          <label for="authorIcon">Ícono del autor</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="footerText" placeholder="Texto del pie" />
-          <label for="footerText">Pie de página</label>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="footerIcon" placeholder="URL del ícono del pie" />
-          <label for="footerIcon">Ícono del pie</label>
-        </div>
-
-        <div class="buttons">
-          <button id="generate">📦 Generar Código</button>
-          <button id="copyCode">📋 Copiar Código</button>
-          <button id="clearFields">🧹 Limpiar Campos</button>
-        </div>
+      <div class="input-group">
+        <input type="text" id="title" required placeholder />
+        <label for="title">Título </label>
+        <span class="char-count" id="titleCount">0/256</span>
       </div>
 
-      <div class="preview-container">
-        <h2>Vista previa</h2>
-        <div id="embedPreview" class="embed-preview"></div>
+      <div class="input-group">
+  <input type="text" id="mentions" placeholder="Ej: @everyone o <@&1234567890>" />
+  <label for="mentions">Menciones fuera del embed</label>
+</div>
+
+
+      <div class="input-group">
+  <div class="markdown-buttons">
+  <button type="button" onclick="insertMarkdown('bold')"><b>B</b></button>
+  <button type="button" onclick="insertMarkdown('italic')"><i>I</i></button>
+  <button type="button" onclick="insertMarkdown('strike')"><s>S</s></button>
+  <button type="button" onclick="insertMarkdown('underline')"><u>U</u></button>
+  <button type="button" onclick="insertMarkdown('mono')">`Mono`</button>
+  <button type="button" onclick="insertMarkdown('block')">📦 Bloque</button>
+  <button type="button" onclick="insertMarkdown('newline')">↵ Salto</button>
+  <button type="button" onclick="insertMarkdown('upper')">🔠 MAY</button>
+  <button type="button" onclick="insertMarkdown('lower')">🔡 min</button>
+    <button onclick="insertMarkdown('quote')">❝ Cita</button>
+  <button onclick="insertMarkdown('ulist')">• Lista</button>
+  <button onclick="insertMarkdown('olist')">1. Lista</button>
+  <button onclick="insertMarkdown('link')">🔗 Link</button>
+  <button onclick="insertMarkdown('image')">🖼️ Img</button>
+  <button onclick="insertMarkdown('hr')">— Línea</button>
+</div>
+
+  <textarea id="description" placeholder="Contenido..." required></textarea>
+
+</div>
+
+
+      <div class="input-group">
+        <input type="color" id="color" />
+        <label for="color">Color del borde</label>
       </div>
-    </div>
 
-    <div id="codeContainer" class="code-container" style="display:none;">
-      <h2>Código Generado</h2>
-      <pre id="embedCode"></pre>
-    </div>
+      <div class="input-group">
+        <input type="text" id="imageUrl" placeholder />
+        <label for="imageUrl">Imagen Principal</label>
+      </div>
 
-    <div id="toast" class="toast">¡Código copiado al portapapeles!</div>
+      <div class="input-group">
+        <input type="text" id="thumbnailUrl" placeholder />
+        <label for="thumbnailUrl">Thumbnail (esquina)</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="authorName" placeholder />
+        <label for="authorName">Nombre del autor</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="authorIcon" placeholder />
+        <label for="authorIcon">URL del icono del autor</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="footerText" placeholder />
+        <label for="footerText">Texto del footer</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="footerIcon" placeholder />
+        <label for="footerIcon">URL del icono del footer</label>
+      </div>
+
+      <div class="button-group">
+        <button id="generate">🎨 Generar Código</button>
+        <button id="clearFields" class="clear-btn">🧹 Limpiar Campos</button>
+      </div>
+
+      <div class="code-output" id="codeContainer" style="display: none;">
+        <h3>Código generado:</h3>
+        <code id="embedCode"></code>
+        <button id="copyCode">📋 Copiar</button>
+      </div>
+
+    </section>
+
+    <section class="preview-section">
+      <h2>Vista previa</h2>
+      <div id="embedPreview" class="embed-preview"></div>
+    </section>
   </main>
 
   <footer>
-    <p>By: Emmadness</p>
+    <div class="footer-title">
+  <img src="footer.png" alt="Logo">
+  <a href="https://truckersmp.com/vtc/81848" target="_blank"><b>Rotra Club ®</b></a> Embed Editor.
+</div>
+
+    <p><b>Truckers 4Life!</b></p>
+    <div class="social-icons">
+  <a href="https://www.instagram.com/iemmadness" target="_blank" title="Instagram">
+    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" class="social-icon">
+  </a>
+  <a href="https://www.youtube.com/@iemmadnesstmp" target="_blank" title="YouTube">
+    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube" class="social-icon">
+  </a>
+</div>
+
+      <p>Creado por: <a href="https://truckersmp.com/user/2147234" target="_blank"><b>Emmadness</b></a></p>
   </footer>
+
+  <div id="toast" class="toast">📋 ¡Copiado al portapapeles!</div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
