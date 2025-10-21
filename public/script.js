@@ -7,7 +7,7 @@ const fields = {
   authorName: document.getElementById('authorName'),
   authorIcon: document.getElementById('authorIcon'),
   footerText: document.getElementById('footerText'),
-  footerIcon: document.getElementById('footerIcon')
+  footerIcon: document.getElementById('footerIcon'),
   mentions: document.getElementById('mentions')
 };
 
@@ -322,6 +322,7 @@ function toggleWrapper(text, wrapper) {
 function escapeRegex(str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
+
 
 
 
